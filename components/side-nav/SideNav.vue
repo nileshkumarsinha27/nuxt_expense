@@ -1,6 +1,6 @@
 <template>
   <div class="side-nav-container">
-    <div class="title-section">
+    <div class="app-title-section">
       <AppIcon />
       <span>{{ navTitle }}</span>
     </div>
@@ -44,7 +44,7 @@ export default Vue.extend({
   background: linear-gradient($grey3, $grey6, $grey5, $grey6);
   padding: 0 20px;
   box-sizing: border-box;
-  .title-section {
+  .app-title-section {
     height: 80px;
     display: flex;
     align-items: center;

@@ -7,57 +7,61 @@
             <AppIcon class="app-icon" />
           </div>
           <p class="app-title">{{ appName }}</p>
-          <LoginForm v-if="showLogin" />
+          <p class="app-description">{{ appDescription }}</p>
+          <Button
+            :value="verifyBtnText"
+            :buttonType="btnType"
+            :customClass="verifyBtnClass"
+            :handleClick="sendVerificationLink"
+            :isDisabled="false"
+          />
         </div>
       </transition>
     </div>
   </div>
 </template>
-
 <script lang="ts">
 import Vue from 'vue';
-import { mapActions } from 'vuex';
 import firebase from 'firebase';
 import AppIcon from '../components/logos/AppIcon.vue';
 import Button from '../components/button/Button.vue';
-import LoginForm from '../components/login-form/LoginForm.vue';
 export default Vue.extend({
   layout: 'login',
-  components: {
-    AppIcon,
-    LoginForm,
-  },
   data: () => ({
     appName: 'Expense Tracker',
     show: false,
-    appDescription:
-      'Simple expense tracker application that helps to keep track of expenses and help to properly analyse your expense by diving into different categories.',
-    showLogin: true,
+    appDescription: 'Please verify your email to continue',
+    verifyBtnText: 'Verify Account',
+    btnType: 'primary',
+    verifyBtnClass: 'verify-btn',
   }),
   mounted() {
     setTimeout(() => {
       this.show = true;
     }, 50);
   },
-  created() {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user && user.emailVerified) {
-        this['auth/SET_LOGGED_IN_USER']({
-          email: user.email,
-          name: user.displayName,
-          photo: user.photoURL || '',
-        });
-        this.$router.push('/dashboard');
-      } else if (user && !user.emailVerified) {
-        this.$router.push('/verify-email');
-      }
-    });
+  components: {
+    AppIcon,
+    Button,
   },
   methods: {
-    ...mapActions(['auth/SET_LOGGED_IN_USER']),
+    sendVerificationLink() {
+      firebase
+        .auth()
+        ?.currentUser?.sendEmailVerification()
+        .then(() => {
+          firebase
+            .auth()
+            .signOut()
+            .then(() => {
+              this.$router.push('/');
+            });
+        });
+    },
   },
 });
 </script>
+
 <style lang="scss" scoped>
 .content-section {
   height: 100vh;
@@ -79,7 +83,7 @@ export default Vue.extend({
     min-height: 300px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     flex-direction: column;
     .app-icon-container {
       position: absolute;
@@ -106,7 +110,7 @@ export default Vue.extend({
     }
     .app-description {
       width: 100%;
-      font-size: 1.15rem;
+      font-size: 1rem;
     }
   }
 }
@@ -117,6 +121,9 @@ export default Vue.extend({
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+.verify-btn {
+  margin: 20px 0;
 }
 @media screen and (max-width: 767px) {
   .content-section {
