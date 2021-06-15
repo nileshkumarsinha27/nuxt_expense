@@ -2,7 +2,7 @@ export type User = {
   name?: string;
   email: string;
   photo?: string;
-  uid: string;
+  monthlyIncome: string;
 };
 export type Auth = {
   user: User;
@@ -12,7 +12,7 @@ export const state = (): Auth => ({
     name: '',
     email: '',
     photo: '',
-    uid: '',
+    monthlyIncome: '',
   },
 });
 

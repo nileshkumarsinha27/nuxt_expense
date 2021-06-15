@@ -1,7 +1,7 @@
 <template>
   <div class="login-form-container">
     <h3>{{ formTitle }}</h3>
-    <form autoComplete="off" @submit="handleSubmit">
+    <form autocomplete="off" @submit="handleSubmit">
       <InputBox
         v-for="(
           { name, placeholder, type, defaultValue, isClear }, key
@@ -24,9 +24,11 @@
       />
     </form>
     <div class="signup-text-section">
-      <span>{{
+      <span>
+        {{
         !showSignUpForm ? signUpDescription : loginFormDescription
-      }}</span>
+        }}
+      </span>
       <span
         class="sign-up-text"
         @click="
@@ -35,8 +37,7 @@
             clearForm();
           }
         "
-        >{{ !showSignUpForm ? signUpText : loginFormButton }}</span
-      >
+      >{{ !showSignUpForm ? signUpText : loginFormButton }}</span>
     </div>
     <div v-if="!showSignUpForm">
       <div class="separator-section">
@@ -60,6 +61,7 @@ import firebase from 'firebase';
 import InoutBox from '../input-box/InputBox.vue';
 import Button from '../button/Button.vue';
 import GoogleLogo from '../logos/GoogleLogo.vue';
+import { userData } from '../../middleware/database';
 type FormInputValueType = {
   email: string;
   password: string;
@@ -152,7 +154,10 @@ export default Vue.extend({
         .createUserWithEmailAndPassword(
           this.formInputValues.email,
           this.formInputValues.password
-        );
+        )
+        .then((res) => {
+          userData(res.user);
+        });
     },
     loginUser() {
       firebase
@@ -160,11 +165,19 @@ export default Vue.extend({
         .signInWithEmailAndPassword(
           this.formInputValues.email,
           this.formInputValues.password
-        );
+        )
+        .then((res) => {
+          userData(res.user);
+        });
     },
     googleSignIn() {
       let provider = new firebase.auth.GoogleAuthProvider();
-      firebase.auth().signInWithPopup(provider);
+      firebase
+        .auth()
+        .signInWithPopup(provider)
+        .then((res) => {
+          userData(res.user);
+        });
     },
   },
   computed: {

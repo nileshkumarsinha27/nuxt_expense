@@ -99,5 +99,8 @@ export default Vue.extend({
       this.inputVal = '';
     }
   },
+  beforeDestroy(): void {
+    this.inputVal = '';
+  },
 });
 </script>
