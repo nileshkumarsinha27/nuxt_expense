@@ -1,7 +1,7 @@
 <template>
   <header class="app-header">
     <div class="app-info">
-      <strong class="title-text">{{ appTitle }}</strong>
+      <strong class="title-text">{{ title.replace('-',' ') }}</strong>
       <UserDetail
         :userName="loggedInUser.name"
         :userEmail="loggedInUser.email"
@@ -16,12 +16,10 @@ import Vue from 'vue';
 import { mapGetters } from 'vuex';
 import UserDetail from '../user-detail/UserDetail.vue';
 export default Vue.extend({
-  data: () => ({
-    appTitle: 'Dashboard',
-  }),
   computed: {
     ...mapGetters({
       loggedInUser: 'auth/getLoggedInUser',
+      title: 'links/getAppTitle',
     }),
   },
   components: {
@@ -50,6 +48,7 @@ export default Vue.extend({
       font-weight: bold;
       color: $black1;
       margin: 0 20px 0 0;
+      text-transform: capitalize;
     }
   }
 }

@@ -84,11 +84,17 @@ export default Vue.extend({
     }),
   },
   mounted() {
-    this['links/SET_ACTIVE_ROUTE'](this.$router.currentRoute.path);
+    this['links/SET_ACTIVE_ROUTE']({
+      activeRoute: this.$router.currentRoute.path,
+      appTitle: this.$router.currentRoute.name,
+    });
   },
   watch: {
     $route(to, from) {
-      this['links/SET_ACTIVE_ROUTE'](to.path);
+      this['links/SET_ACTIVE_ROUTE']({
+        activeRoute: to.path,
+        appTitle: to.name,
+      });
     },
   },
 });

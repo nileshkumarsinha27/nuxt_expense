@@ -27,6 +27,7 @@ export default Vue.extend({
           email: user.email,
           name: user.displayName,
           photo: user.photoURL || '',
+          uid: user.uid,
         });
       } else if (user && !user.emailVerified) {
         this.$router.push('/verify-email');
@@ -37,6 +38,6 @@ export default Vue.extend({
 </script>
 <style lang="scss">
 body {
-  background: $grey3;
+  background: $grey3 !important;
 }
 </style>

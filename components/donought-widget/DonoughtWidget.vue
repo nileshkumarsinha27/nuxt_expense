@@ -34,7 +34,6 @@ export default Vue.extend({
 </script>
 <style lang="scss">
 .donought-widget-container {
-  background: $white;
   width: 300px;
   height: 200px;
   display: flex;
@@ -42,6 +41,7 @@ export default Vue.extend({
   justify-content: space-around;
   border-radius: 5px;
   box-shadow: 0 0 31px $box-shadow;
+  background: $white !important;
   .title-container {
     width: 40%;
     .card-title {
