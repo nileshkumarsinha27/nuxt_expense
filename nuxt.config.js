@@ -35,25 +35,6 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/style-resources',
-    // [
-    //   '@nuxtjs/firebase',
-    //   {
-    //     config: {
-    //       apiKey: 'AIzaSyDnpBZqHvq4K2qk5OlaapWwALEd5jMetVM',
-    //       authDomain: 'expense-cbf76.firebaseapp.com',
-    //       projectId: 'expense-cbf76',
-    //       storageBucket: 'expense-cbf76.appspot.com',
-    //       messagingSenderId: '646757079218',
-    //       appId: '1:646757079218:web:e095c9b87fcce8c71151ab',
-    //       measurementId: 'G-55JE4HTPL5',
-    //       databaseURL: 'https://expense-cbf76-default-rtdb.firebaseio.com/',
-    //     },
-    //     services: {
-    //       database: true,
-    //       auth: true,
-    //     },
-    //   },
-    // ],
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

@@ -56,6 +56,16 @@ export default Vue.extend({
   methods: {
     ...mapActions(['auth/SET_LOGGED_IN_USER']),
   },
+  head: () => ({
+    title: 'Expense | Login',
+    meta: [
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'Dashboard for tracking expenses',
+      },
+    ],
+  }),
 });
 </script>
 <style lang="scss" scoped>
