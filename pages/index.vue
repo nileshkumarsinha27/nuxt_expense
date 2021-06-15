@@ -18,6 +18,7 @@
 import Vue from 'vue';
 import { mapActions } from 'vuex';
 import firebase from 'firebase';
+import { userData } from '~/middleware/database';
 import AppIcon from '../components/logos/AppIcon.vue';
 import Button from '../components/button/Button.vue';
 import LoginForm from '../components/login-form/LoginForm.vue';
@@ -42,12 +43,7 @@ export default Vue.extend({
   created() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user && user.emailVerified) {
-        this['auth/SET_LOGGED_IN_USER']({
-          email: user.email,
-          name: user.displayName,
-          photo: user.photoURL || '',
-        });
-        this.$router.push('/dashboard');
+        userData(user, this.updateStore);
       } else if (user && !user.emailVerified) {
         this.$router.push('/verify-email');
       }
@@ -55,6 +51,15 @@ export default Vue.extend({
   },
   methods: {
     ...mapActions(['auth/SET_LOGGED_IN_USER']),
+    updateStore(user: any) {
+      this['auth/SET_LOGGED_IN_USER']({
+        monthlyIncome: user.monthlyIncome,
+        email: user.email,
+        name: user.displayName || user.username,
+        photo: user.profile_picture || '',
+      });
+      this.$router.push('/dashboard');
+    },
   },
   head: () => ({
     title: 'Expense | Login',

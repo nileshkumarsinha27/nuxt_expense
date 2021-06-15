@@ -16,5 +16,4 @@ const firebaseConfig = {
 app = firebase.apps.length
   ? firebase.app()
   : firebase.initializeApp(firebaseConfig);
-
-export const db = app.database();
+app.database().ref();
