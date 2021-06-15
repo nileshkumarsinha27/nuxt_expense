@@ -59,6 +59,16 @@ export default Vue.extend({
         });
     },
   },
+  head: () => ({
+    title: 'Expense | Verify Email',
+    meta: [
+      {
+        hid: 'description',
+        name: 'description',
+        content: 'Dashboard for tracking expenses',
+      },
+    ],
+  }),
 });
 </script>
 
