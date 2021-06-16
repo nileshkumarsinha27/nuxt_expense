@@ -26,6 +26,7 @@ export default Vue.extend({
         email: user.email,
         name: user.displayName || user.username,
         photo: user.profile_picture || '',
+        expenseData: user.expenseData,
       });
     },
   },

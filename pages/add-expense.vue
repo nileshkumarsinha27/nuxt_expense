@@ -36,15 +36,19 @@
         </div>
       </div>
     </div>
+    <div class="add-expense-section">
+      <AddExpenseForm />
+    </div>
   </main>
 </template>
-<script >
+<script>
 import Vue from 'vue';
 import { currencyFormatter } from '~/middleware/number';
 import InputBox from '~/components/input-box/InputBox.vue';
 import Button from '~/components/button/Button.vue';
 import { updateUserData, getUser } from '~/middleware/database';
 import { mapGetters } from 'vuex';
+import AddExpenseForm from '~/components/add-expense-form/AddExpenseForm.vue';
 export default Vue.extend({
   head: () => ({
     title: 'Expense | Add Expense',
@@ -103,6 +107,7 @@ export default Vue.extend({
     handleUpdate() {
       const { uid } = getUser() || {};
       updateUserData(uid, {
+        expenseData:this.user.expenseData,
         monthlyIncome: this.updateMonthlyIncome.inputBox.inputValue,
       });
       this.clearUpdateInputField();
@@ -125,6 +130,7 @@ export default Vue.extend({
   components: {
     InputBox,
     Button,
+    AddExpenseForm
   },
   computed: {
     ...mapGetters({
@@ -154,10 +160,16 @@ export default Vue.extend({
 <style lang="scss">
 .add-expense-container {
   padding: 80px 0 0 20%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: calc(100vh - 80px);
   .monthly-income-container {
     background: $white;
-    width: 45%;
     margin: 20px auto;
+    width: 45%;
     padding: 20px 0;
     display: flex;
     align-items: center;
@@ -217,6 +229,9 @@ export default Vue.extend({
         width: 100px;
       }
     }
+  }
+  .add-expense-section {
+    width: 50%;
   }
 }
 .fade-enter-active,
