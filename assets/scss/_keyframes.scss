@@ -1,0 +1,14 @@
+@keyframes toastAnimation {
+  0% {
+    transform: translateX(150%);
+  }
+  50% {
+    transform: translateX(0);
+  }
+  85% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(150%);
+  }
+}
