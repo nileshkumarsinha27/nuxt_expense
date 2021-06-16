@@ -1,15 +1,19 @@
 <template>
   <div class="add-expense-form-container">
     <div class="add-expense-description-section">
-      <p class="add-expense-description">{{addExpenseDescription}}</p>
+      <p class="add-expense-description">{{ addExpenseDescription }}</p>
     </div>
     <div class="expense-form-container">
-      <p class="add-expense-title">{{addExpenseTitle}}</p>
-      <form class="add-expense-form" @submit="handleFormSubmit" autocomplete="off">
+      <p class="add-expense-title">{{ addExpenseTitle }}</p>
+      <form
+        class="add-expense-form"
+        @submit="handleFormSubmit"
+        autocomplete="off"
+      >
         <InputBox
           v-for="(
-          { name, placeholder, type, defaultValue, isClear }, key
-        ) in expenseFormConfiguration"
+            { name, placeholder, type, defaultValue, isClear }, key
+          ) in expenseFormConfiguration"
           :key="key"
           :typeSent="type"
           :placeholder="placeholder"
@@ -21,25 +25,37 @@
         />
         <select class="expense-select-box" v-model="expenseCategorySelected">
           <option
-            v-for="({label,id}) in expenseCategories"
+            v-for="{ label, id } in expenseCategories"
             :key="id"
             :disabled="!id"
             :value="label"
-          >{{label}}</option>
+          >
+            {{ label }}
+          </option>
         </select>
       </form>
       <div class="update-btn-section">
         <Button
-          v-for="({text,type,clickHandler},key) in buttonConfig"
+          v-for="({ text, type, clickHandler }, key) in buttonConfig"
           :value="text"
           :key="key"
           :buttonType="type"
-          :isDisabled="!isUpdateIncomeButtonDisabled && text==='Add'"
+          :isDisabled="!isUpdateIncomeButtonDisabled && text === 'Add'"
           :customClass="updateButtonClass"
-          :handleClick="()=>handleUpdateBtnClick(text)"
+          :handleClick="() => handleUpdateBtnClick(text)"
         />
       </div>
     </div>
+    <Toast
+      v-if="showToast"
+      :toastMessage="toastMsg"
+      :closeToast="
+        () => {
+          handleOpenCloseToast(false);
+        }
+      "
+      :toastType="toastType"
+    />
   </div>
 </template>
 
@@ -47,8 +63,10 @@
 import Vue from 'vue';
 import InputBox from '~/components/input-box/InputBox.vue';
 import Button from '~/components/button/Button.vue';
+import Toast from '~/components/toast/Toast.vue';
 import { updateUserData, getUser } from '~/middleware/database';
 import { mapGetters } from 'vuex';
+import { getTotalExpense } from '~/middleware/number';
 type FormInputValueType = {
   value: string;
   description: string;
@@ -113,12 +131,26 @@ export default Vue.extend({
       },
     ],
     expenseCategorySelected: 'Select a category',
+    successText: 'Expense Updated Successfully',
+    failureText: 'Total Expense more than monthly income',
+    showToast: false,
+    toastMsg: '',
+    toastType: '',
   }),
   methods: {
     handleFormSubmit(event: Event) {
       event.preventDefault();
     },
     handleInputChange(inputVal: string, inputName: keyof FormInputValueType) {
+      if (
+        this.expenseFormConfiguration.every(
+          (formElement) => formElement.isClear
+        )
+      ) {
+        this.expenseFormConfiguration.forEach((formElement) => {
+          formElement.isClear = false;
+        });
+      }
       this.formInputValues[inputName] = inputVal;
     },
     clearForm() {
@@ -131,18 +163,31 @@ export default Vue.extend({
       this.expenseCategorySelected = 'Select a category';
     },
     handleExpenseUpdate() {
-      const { uid } = getUser() || {};
-      updateUserData(uid, {
-        monthlyIncome: this.user.monthlyIncome,
-        expenseData: [
-          ...(this.user.expenseData || []),
+      if (
+        getTotalExpense(this.user.expenseData) +
+          Number(this.formInputValues.value) <
+        Number(this.user.monthlyIncome)
+      ) {
+        const { uid } = getUser() || {};
+        updateUserData(
+          uid,
           {
-            value: this.formInputValues.value,
-            description: this.formInputValues.description,
-            category: this.expenseCategorySelected,
+            monthlyIncome: this.user.monthlyIncome,
+            expenseData: [
+              ...(this.user.expenseData || []),
+              {
+                value: this.formInputValues.value,
+                description: this.formInputValues.description,
+                category: this.expenseCategorySelected,
+                date: new Date(),
+              },
+            ],
           },
-        ],
-      });
+          () => (this as any).handleOpenCloseToast?.(true, this.successText)
+        );
+      } else {
+        (this as any).handleOpenCloseToast?.(true, this.failureText, 'error');
+      }
       (this as any).clearForm?.();
     },
     handleUpdateBtnClick(text: string) {
@@ -157,10 +202,19 @@ export default Vue.extend({
           break;
       }
     },
+    handleOpenCloseToast(toastStatus: boolean, text = '', type = 'success') {
+      this.showToast = toastStatus;
+      this.toastMsg = text;
+      this.toastType = type;
+      if (text === '') {
+        this.toastType = '';
+      }
+    },
   },
   components: {
     InputBox,
     Button,
+    Toast,
   },
   computed: {
     ...mapGetters({
@@ -172,7 +226,8 @@ export default Vue.extend({
           (formValue: string) => formValue
         ) &&
         !isNaN(Number(this.formInputValues.value)) &&
-        this.expenseCategorySelected !== 'Select a category'
+        this.expenseCategorySelected !== 'Select a category' &&
+        Number(this.user.monthlyIncome) > getTotalExpense(this.user.expenseData)
       );
     },
   },

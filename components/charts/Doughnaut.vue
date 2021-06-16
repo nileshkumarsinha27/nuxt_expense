@@ -19,6 +19,9 @@ export default {
     chartOptions: {
       responsive: true,
       maintainAspectRatio: false,
+       legend: {
+            display: false
+         }
     },
   }),
   computed: {
@@ -29,5 +32,10 @@ export default {
       };
     },
   },
+   methods: {
+    update() {
+      this.$data._chart.update()
+    }
+  }
 };
 </script>

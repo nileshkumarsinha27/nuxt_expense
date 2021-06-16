@@ -1,18 +1,19 @@
 <template>
   <main class="add-expense-container">
     <div class="monthly-income-container">
-      <p class="app-description">{{appDescription}}</p>
+      <p class="app-description">{{ appDescription }}</p>
       <div class="monthly-income-section">
         <div v-if="!showUpdateField" key="new_div">
-          <p class="monthly-income-title test">{{monthlySalary.title}}</p>
-          <p class="monthly-income-value">{{monthlyIncome}}</p>
+          <p class="monthly-income-title test">{{ monthlySalary.title }}</p>
+          <p class="monthly-income-value">{{ monthlyIncome }}</p>
           <span
             class="update-income-text"
-            @click="()=>toggleShowUpdateIncome(true)"
-          >{{monthlySalary.updateText}}</span>
+            @click="() => toggleShowUpdateIncome(true)"
+            >{{ monthlySalary.updateText }}</span
+          >
         </div>
         <div v-else>
-          <p class="monthly-income-title">{{updateMonthlyIncome.title}}</p>
+          <p class="monthly-income-title">{{ updateMonthlyIncome.title }}</p>
           <InputBox
             :typeSent="updateMonthlyIncome.inputBox.type"
             :placeholder="updateMonthlyIncome.inputBox.placeholder"
@@ -24,13 +25,15 @@
           />
           <div class="update-btn-section">
             <Button
-              v-for="({text,type,clickHandler},key) in updateMonthlyIncome.buttonConfig"
+              v-for="(
+                { text, type, clickHandler }, key
+              ) in updateMonthlyIncome.buttonConfig"
               :value="text"
               :key="key"
               :buttonType="type"
-              :isDisabled="!isUpdateIncomeButtonDisabled && text==='Update'"
+              :isDisabled="!isUpdateIncomeButtonDisabled && text === 'Update'"
               :customClass="updateButtonClass"
-              :handleClick="()=>handleUpdateBtnClick(text)"
+              :handleClick="() => handleUpdateBtnClick(text)"
             />
           </div>
         </div>
@@ -39,6 +42,16 @@
     <div class="add-expense-section">
       <AddExpenseForm />
     </div>
+    <Toast
+      v-if="showToast"
+      :toastMessage="toastMsg"
+      :closeToast="
+        () => {
+          handleOpenCloseToast(false);
+        }
+      "
+      :toastType="toastType"
+    />
   </main>
 </template>
 <script>
@@ -49,6 +62,7 @@ import Button from '~/components/button/Button.vue';
 import { updateUserData, getUser } from '~/middleware/database';
 import { mapGetters } from 'vuex';
 import AddExpenseForm from '~/components/add-expense-form/AddExpenseForm.vue';
+import Toast from '~/components/toast/Toast.vue';
 export default Vue.extend({
   head: () => ({
     title: 'Expense | Add Expense',
@@ -92,6 +106,11 @@ export default Vue.extend({
     },
     inputClass: 'update-input-field',
     show: false,
+    successText: 'Monthly income updated successfully',
+    failureText: 'Something went wrong',
+    showToast: false,
+    toastMsg: '',
+    toastType: '',
   }),
   methods: {
     toggleShowUpdateIncome(showState) {
@@ -106,10 +125,14 @@ export default Vue.extend({
     },
     handleUpdate() {
       const { uid } = getUser() || {};
-      updateUserData(uid, {
-        expenseData:this.user.expenseData,
-        monthlyIncome: this.updateMonthlyIncome.inputBox.inputValue,
-      });
+      updateUserData(
+        uid,
+        {
+          expenseData: this.user.expenseData || [],
+          monthlyIncome: this.updateMonthlyIncome.inputBox.inputValue,
+        },
+        () => this.handleOpenCloseToast?.(true, this.successText)
+      );
       this.clearUpdateInputField();
       this.toggleShowUpdateIncome(false);
     },
@@ -126,11 +149,20 @@ export default Vue.extend({
           break;
       }
     },
+    handleOpenCloseToast(toastStatus, text = '', type = 'success') {
+      this.showToast = toastStatus;
+      this.toastMsg = text;
+      this.toastType = type;
+      if (text === '') {
+        this.toastType = '';
+      }
+    },
   },
   components: {
     InputBox,
     Button,
-    AddExpenseForm
+    AddExpenseForm,
+    Toast,
   },
   computed: {
     ...mapGetters({

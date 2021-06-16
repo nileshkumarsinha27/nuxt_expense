@@ -1,5 +1,5 @@
 <template>
-  <div class="donought-widget-container">
+  <div :class="getContainerClass()">
     <div class="title-container">
       <p class="card-title">{{ cardTitle }}</p>
       <p class="card-value">{{ cardValue }}</p>
@@ -11,6 +11,7 @@
 </template>
 <script lang="ts">
 import Vue from 'vue';
+import cx from 'classnames';
 import DonoughtChart from '../charts/Doughnaut.vue';
 export default Vue.extend({
   components: { DonoughtChart },
@@ -29,13 +30,23 @@ export default Vue.extend({
     chartData: {
       type: Array,
     },
+    customClass: {
+      type: String,
+      default: '',
+    },
+  },
+  methods: {
+    getContainerClass() {
+      return cx(['donought-widget-container', this.customClass]);
+    },
   },
 });
 </script>
 <style lang="scss">
 .donought-widget-container {
   width: 300px;
-  height: 200px;
+  padding: 20px 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -43,7 +54,7 @@ export default Vue.extend({
   box-shadow: 0 0 31px $box-shadow;
   background: $white !important;
   .title-container {
-    width: 40%;
+    width: 20%;
     .card-title {
       font-size: 12px;
       color: $grey8;
@@ -57,6 +68,8 @@ export default Vue.extend({
   }
   .chart-container {
     width: 50%;
+    display: flex;
+    flex-direction: column;
     #doughnut-chart {
       width: 150px !important;
       height: 150px !important;
